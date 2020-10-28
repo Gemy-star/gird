@@ -7,41 +7,36 @@ import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import { InputTextarea } from 'primereact/inputtextarea';
-//import { RadioButton } from 'primereact/radiobutton';
-//import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
 import './CrudGird.css';
 
 export class CrudGird extends Component {
 
-    emptyEmployee = {
-        name: "",
-        age: null,
-        phone: "",
-        address: "",
-        status: null,
-        email: "",
-        picture: null,
-        birth_date: null,
-        isbn: null,
-        date_hired: null,
-        specialization: "",
-        university: ""
+    emptyDOC_SCREEN_COMPONENT = {
+        COMP_ID: null,
+        COMP_NAME: "",
+        COMP_TYPE_ID: null,
+        COMP_TYPE_NAME: "",
+        COMP_DESC: "",
+        SCREEN_ID: null
     };
 
     constructor(props) {
         super(props);
 
         this.state = {
-            employees: props.data,
-            EmployeeDialog: false,
-            deleteEmployeeDialog: false,
-            deleteEmployeesDialog: false,
-            employee: this.emptyEmployee,
-            selectedEmployees: null,
+            DOC_SCREEN_COMPONENTS: props.data,
+            DOC_SCREEN_COMPONENTDialog: false,
+            deleteDOC_SCREEN_COMPONENTDialog: false,
+            deleteDOC_SCREEN_COMPONENTSDialog: false,
+            DOC_SCREEN_COMPONENT: this.emptyDOC_SCREEN_COMPONENT,
+            selectedDOC_SCREEN_COMPONENTS: null,
             submitted: false,
-            globalFilter: null
+            globalFilter: null,
+            COMP_TYPE_ID:null,
+            COMP_TYPE_VALUE : null,
         };
 
        // this.productService = new ProductService();
@@ -50,104 +45,135 @@ export class CrudGird extends Component {
 
     componentDidMount() {
         axios({
-            method: 'get',
-            url:'http://dtcdashboard.pythonanywhere.com/api/v1/employee/',
+            method: 'post',
+            url:'http://172.16.1.102:6060/api/v1/getdata',
+            data:{
+                fun_name:"FU_DOC_SCREEN_COMPONENT2",
+                param_name:["P_SCREEN_ID"],
+                param_value:["3"]
+            }
 
         })
             .then(response => {
-                console.log(response.data)
-                this.setState({data: response.data})
+                console.log(response.data.Table)
+                this.setState({employees: response.data.Table})
 
             })
             .catch(error => console.error('timeout exceeded'))
-        //this.productService.getProducts().then(data => this.setState({ products: data }));
     }
 
-    // formatCurrency = (value) => {
-    //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    // }
 
     openNew = () =>  {
         this.setState({
-            employee: this.emptyEmployee,
+            DOC_SCREEN_COMPONENT: this.emptyDOC_SCREEN_COMPONENT,
             submitted: false,
-            employeeDialog: true
+            DOC_SCREEN_COMPONENTDialog: true
         });
     }
 
     hideDialog = ()=> {
         this.setState({
             submitted: false,
-            employeeDialog: false
+            DOC_SCREEN_COMPONENTDialog: false
         });
     }
 
-    hideDeleteEmployeeDialog = ()=> {
-        this.setState({ deleteEmployeeDialog: false });
+    hideDeleteDOC_SCREEN_COMPONENTDialog = ()=> {
+        this.setState({ deleteDOC_SCREEN_COMPONENTDialog: false });
     }
 
-    hideDeleteEmployeesDialog = () =>  {
-        this.setState({ deleteEmployeesDialog: false });
+    hideDeleteDOC_SCREEN_COMPONENTSDialog = () =>  {
+        this.setState({ deleteDOC_SCREEN_COMPONENTSDialog: false });
     }
 
-    saveEmployee = () =>  {
+    saveDOC_SCREEN_COMPONENT = () =>  {
         let state = { submitted: true };
 
-        if (this.state.employee.name.trim()) {
-            let employees = [...this.state.employees];
-            let employee = {...this.state.employee};
-            if (this.state.product.id) {
-                const index = this.findIndexById(this.state.employee.id);
+        if (this.state.DOC_SCREEN_COMPONENT.COMP_NAME.trim()) {
+            let DOC_SCREEN_COMPONENTS = [...this.state.DOC_SCREEN_COMPONENTS];
+            let DOC_SCREEN_COMPONENT = {...this.state.DOC_SCREEN_COMPONENT};
+            if (this.state.DOC_SCREEN_COMPONENT.COMP_ID) {
+                const index = this.findIndexById(this.state.DOC_SCREEN_COMPONENT.COMP_ID);
 
-                employees[index] = employee;
+                DOC_SCREEN_COMPONENTS[index] = DOC_SCREEN_COMPONENT;
                 this.toast.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
             }
             else {
-                employee.id = this.createId();
-                employee.picture = 'product-placeholder.svg';
-                employees.push(employee);
+                DOC_SCREEN_COMPONENT.COMP_ID = this.createId();
+                DOC_SCREEN_COMPONENT.COMP_DESC = 'product-placeholder.svg';
+                DOC_SCREEN_COMPONENTS.push(DOC_SCREEN_COMPONENT);
                 this.toast.show({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
             }
 
             state = {
                 ...state,
-                employees,
+                DOC_SCREEN_COMPONENTS,
                 productDialog: false,
-                product: this.emptyEmployee
+                product: this.emptyDOC_SCREEN_COMPONENT
             };
         }
 
         this.setState(state);
+
     }
 
-    editEmployee = (employee) => {
+    editDOC_SCREEN_COMPONENT = (DOC_SCREEN_COMPONENT) => {
         this.setState({
-            employee: { ...employee },
-            employeeDialog: true
+            DOC_SCREEN_COMPONENT: { ...DOC_SCREEN_COMPONENT },
+            DOC_SCREEN_COMPONENTDialog: true
         });
+
+        axios({
+            method: 'post',
+            url:'http://172.16.1.102:6060/api/v1/getdata',
+            data:{
+                fun_name:"PRO_UPDATE_D_SCREEN_COMPONENT",
+                param_name:["P_COMP_ID","P_COMP_NAME","P_COMP_TYPE_ID","P_COMP_DESC","P_SCREEN_ID"],
+                param_value:[DOC_SCREEN_COMPONENT.COMP_ID , DOC_SCREEN_COMPONENT.COMP_NAME , DOC_SCREEN_COMPONENT.COMP_TYPE_ID , DOC_SCREEN_COMPONENT.COMP_DESC , DOC_SCREEN_COMPONENT.SCREEN_ID]
+            }
+
+        })
+            .then(response => {
+                console.log(response.data)
+            })
+            .catch(error => console.error('timeout exceeded'))
     }
 
-    confirmDeleteEmployee = (employee) => {
+    confirmDeleteDOC_SCREEN_COMPONENT = (DOC_SCREEN_COMPONENT) => {
         this.setState({
-            employee,
-            deleteEmployeeDialog: true
+            DOC_SCREEN_COMPONENT,
+            deleteDOC_SCREEN_COMPONENTDialog: true
         });
+        axios({
+            method: 'post',
+            url:'http://172.16.1.102:6060/api/v1/getdata',
+            data:{
+                fun_name:"PRO_DELETE_D_SCREEN_COMPONENT",
+                param_name:["P_COMP_ID"],
+                param_value:[DOC_SCREEN_COMPONENT.COMP_ID]
+            }
+
+        })
+            .then(response => {
+                console.log(response.data)
+            })
+            .catch(error => console.error('timeout exceeded'))
     }
 
-    deleteEmployee = () => {
-        let employees = this.state.employees.filter(val => val.id !== this.state.employee.id);
+    deleteDOC_SCREEN_COMPONENTS = () => {
+        let DOC_SCREEN_COMPONENTS = this.state.DOC_SCREEN_COMPONENT.filter(val => val.COMP_ID !== this.state.DOC_SCREEN_COMPONENT.COMP_ID);
         this.setState({
-            employees,
-            deleteEmployeeDialog: false,
-            employee: this.emptyEmployee
+            DOC_SCREEN_COMPONENTS,
+            deleteDOC_SCREEN_COMPONENTDialog: false,
+            DOC_SCREEN_COMPONENT: this.emptyDOC_SCREEN_COMPONENT
         });
-        this.toast.show({ severity: 'success', summary: 'Successful', detail: 'employee Deleted', life: 3000 });
+        this.toast.show({ severity: 'success', summary: 'Successful', detail: 'DOC_SCREEN_COMP Deleted', life: 3000 });
     }
 
     findIndexById = (id)=> {
         let index = -1;
-        for (let i = 0; i < this.state.employees.length; i++) {
-            if (this.state.employees[i].id === id) {
+        for (let i = 0; i < this.state.DOC_SCREEN_COMPONENTS.length; i++) {
+            if (this.state.DOC_SCREEN_COMPONENTS[i].id === id) {
                 index = i;
                 break;
             }
@@ -170,40 +196,37 @@ export class CrudGird extends Component {
     }
 
     confirmDeleteSelected = () => {
-        this.setState({ deleteEmployeesDialog: true });
+        this.setState({ deleteDOC_SCREEN_COMPONENTDialog: true });
     }
 
-    deleteSelectedEmployees = () => {
-        let employees = this.state.employees.filter(val => !this.state.selectedEmployees.includes(val));
+    deleteSelectedDOC_SCREEN_COMPONENTS = () => {
+        let DOC_SCREEN_COMPONENTS = this.state.DOC_SCREEN_COMPONENTS.filter(val => !this.state.selectedDOC_SCREEN_COMPONENTS.includes(val));
         this.setState({
-            employees,
-            deleteEmployeesDialog: false,
-            selectedEmployees: null
+            DOC_SCREEN_COMPONENTS,
+            deleteDOC_SCREEN_COMPONENTSDialog: false,
+            selectedDOC_SCREEN_COMPONENTS: null
         });
-        this.toast.show({ severity: 'success', summary: 'Successful', detail: 'employees Deleted', life: 3000 });
+        this.toast.show({ severity: 'success', summary: 'Successful', detail: 'DOC_SCREEN_COMPONENTS Deleted', life: 3000 });
     }
 
-    onCategoryChange =  (e) => {
-        let employee = {...this.state.employee};
-        employee['isbn'] = e.value;
-        this.setState({ employee });
+    onCOMP_TYPE_IDChange =  (e) => {
+        let DOC_SCREEN_COMPONENT = {...this.state.DOC_SCREEN_COMPONENT};
+        DOC_SCREEN_COMPONENT['COMP_TYPE_ID'] = e.value;
+        this.setState({ DOC_SCREEN_COMPONENT });
     }
 
     onInputChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
-        let employee = {...this.state.employee};
-        employee[`${name}`] = val;
+        let DOC_SCREEN_COMPONENT = {...this.state.DOC_SCREEN_COMPONENT};
+        DOC_SCREEN_COMPONENT[`${name}`] = val;
 
-        this.setState({ employee });
+        this.setState({ DOC_SCREEN_COMPONENT : DOC_SCREEN_COMPONENT });
+        console.log(this.state.DOC_SCREEN_COMPONENT);
+
+
     }
 
-    onInputNumberChange =(e, name) => {
-        const val = e.value || 0;
-        let employee = {...this.state.employee};
-        employee[`${name}`] = val;
 
-        this.setState({ employee });
-    }
 
     leftToolbarTemplate = () => {
         return (
@@ -214,21 +237,11 @@ export class CrudGird extends Component {
     }
 
 
-
-    imageBodyTemplate = (rowData) => {
-        return <img src={`${rowData.picture}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.picture} className="product-image" />
-    }
-
-
-
-
-
-
     actionBodyTemplate = (rowData) =>  {
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => this.editEmployee(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => this.confirmDeleteEmployee(rowData)} />
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => this.editDOC_SCREEN_COMPONENT(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => this.confirmDeleteDOC_SCREEN_COMPONENT(rowData)} />
             </React.Fragment>
         );
     }
@@ -236,29 +249,29 @@ export class CrudGird extends Component {
     render() {
         const header = (
             <div className="table-header">
-                <h5 className="p-m-0">Manage Employees</h5>
+                <h5 className="p-m-0">Manage DOC_SCREEN_COMPONENT</h5>
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
                     <InputText type="search" onInput={(e) => this.setState({ globalFilter: e.target.value })} placeholder="Search..." />
                 </span>
             </div>
         );
-        const employeeDialogFooter = (
+        const DOC_SCREEN_COMPONENTDialogFooter = (
             <React.Fragment>
                 <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={this.hideDialog} />
-                <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={this.saveEmployee} />
+                <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={this.saveDOC_SCREEN_COMPONENT} />
             </React.Fragment>
         );
-        const deleteEmployeeDialogFooter = (
+        const deleteDOC_SCREEN_COMPONENTDialogFooter = (
             <React.Fragment>
-                <Button label="No" icon="pi pi-times" className="p-button-text" onClick={this.hideDeleteEmployeeDialog} />
-                <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={this.deleteEmployee} />
+                <Button label="No" icon="pi pi-times" className="p-button-text" onClick={this.hideDeleteDOC_SCREEN_COMPONENTDialog} />
+                <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={this.deleteDOC_SCREEN_COMPONENTS} />
             </React.Fragment>
         );
-        const deleteEmployeesDialogFooter = (
+        const deleteDOC_SCREEN_COMPONENTsDialogFooter = (
             <React.Fragment>
-                <Button label="No" icon="pi pi-times" className="p-button-text" onClick={this.hideDeleteEmployeeDialog} />
-                <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={this.deleteSelectedEmployees} />
+                <Button label="No" icon="pi pi-times" className="p-button-text" onClick={this.hideDeleteDOC_SCREEN_COMPONENTDialog} />
+                <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={this.hideDeleteDOC_SCREEN_COMPONENTSDialog} />
             </React.Fragment>
         );
 
@@ -269,68 +282,49 @@ export class CrudGird extends Component {
                 <div className="card">
                     <Toolbar className="p-mb-4" left={this.leftToolbarTemplate} ></Toolbar>
 
-                    <DataTable ref={(el) => this.dt = el} value={this.props.data} selection={this.state.selectedEmployees} onSelectionChange={(e) => this.setState({ selectedEmployee: e.value })}
+                    <DataTable ref={(el) => this.dt = el} value={this.props.data} selection={this.state.selectedDOC_SCREEN_COMPONENTS} onSelectionChange={(e) => this.setState({ selectedDOC_SCREEN_COMPONENTS: e.value })}
                                dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
                                globalFilter={this.state.globalFilter}
                                header={header}>
 
-                        <Column field="id" header="ID" sortable></Column>
-                        <Column field="name" header="Name" sortable></Column>
-                        <Column header="picture" body={this.imageBodyTemplate}></Column>
-                        <Column field="manager" header="Manager"  sortable></Column>
-                        <Column field="address" header="Address" sortable></Column>
-                        <Column field="email" header="Email"  sortable></Column>
-                        <Column field="phone" header="Phone"  sortable></Column>
+                        <Column field="COMP_ID" header="COMP_ID" sortable></Column>
+                        <Column field="COMP_NAME" header="COMP_NAME" sortable></Column>
+                        <Column field="COMP_TYPE_ID" header="COMP_TYPE_ID"  sortable></Column>
+                        <Column field="COMP_TYPE_NAME" header="COMP_TYPE_NAME"  sortable></Column>
+                        <Column field="COMP_DESC" header="COMP_DESC"  sortable></Column>
+                        <Column field="SCREEN_ID" header="SCREEN_ID"  sortable></Column>
                         <Column body={this.actionBodyTemplate}></Column>
                     </DataTable>
                 </div>
 
-                <Dialog visible={this.state.employeeDialog} style={{ width: '450px' }} header="Employee Details" modal className="p-fluid" footer={employeeDialogFooter} onHide={this.hideDialog}>
-                    {this.state.employee.picture && <img src={`showcase/demo/images/product/${this.state.employee.picture}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={this.state.product.image} className="product-image" />}
+                <Dialog visible={this.state.DOC_SCREEN_COMPONENTDialog} style={{ width: '450px' }} header="DOC_SCREEN_COMPONENT Details" modal className="p-fluid" footer={DOC_SCREEN_COMPONENTDialogFooter} onHide={this.hideDialog}>
                     <div className="p-field">
-                        <label htmlFor="name">Name</label>
-                        <InputText id="name" value={this.state.employee.name} onChange={(e) => this.onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': this.state.submitted && !this.state.employee.name })} />
-                        {this.state.submitted && !this.state.employee.name && <small className="p-invalid">Name is required.</small>}
+                        <label htmlFor="description">COMP_NAME</label>
+                        <InputTextarea id="description" value={this.state.DOC_SCREEN_COMPONENT.COMP_NAME} onChange={(e) => this.onInputChange(e, 'COMP_NAME')} required rows={3} cols={20} />
                     </div>
                     <div className="p-field">
-                        <label htmlFor="description">address</label>
-                        <InputTextarea id="description" value={this.state.employee.address} onChange={(e) => this.onInputChange(e, 'address')} required rows={3} cols={20} />
+                        <label htmlFor="description">COMP_TYPE_ID</label>
+                        <Dropdown optionLabel="COMP_TYPE_NAME" optionValue="COMP_TYPE_ID" value={this.state.COMP_TYPE_VALUE} options={this.props.combo} onChange={(e) => {
+                            this.onInputChange(e,'COMP_TYPE_ID')
+                        console.log(this.state.COMP_TYPE_VALUE)}} placeholder="Select a COMPO_TYPE"/>
                     </div>
-
-                    {/*<div className="p-field">*/}
-                    {/*    <label className="p-mb-3">Skills</label>*/}
-                    {/*    <div className="p-formgrid p-grid">*/}
-                    {/*        <div className="p-field-radiobutton p-col-6">*/}
-                    {/*            <RadioButton inputId="category1" name="category" value="Accessories" onChange={this.onCategoryChange} checked={this.state.product.category === 'Accessories'} />*/}
-                    {/*            <label htmlFor="category1">Accessories</label>*/}
-                    {/*        </div>*/}
-                    {/*        <div className="p-field-radiobutton p-col-6">*/}
-                    {/*            <RadioButton inputId="category2" name="category" value="Clothing" onChange={this.onCategoryChange} checked={this.state.product.category === 'Clothing'} />*/}
-                    {/*            <label htmlFor="category2">Clothing</label>*/}
-                    {/*        </div>*/}
-                    {/*        <div className="p-field-radiobutton p-col-6">*/}
-                    {/*            <RadioButton inputId="category3" name="category" value="Electronics" onChange={this.onCategoryChange} checked={this.state.product.category === 'Electronics'} />*/}
-                    {/*            <label htmlFor="category3">Electronics</label>*/}
-                    {/*        </div>*/}
-                    {/*        <div className="p-field-radiobutton p-col-6">*/}
-                    {/*            <RadioButton inputId="category4" name="category" value="Fitness" onChange={this.onCategoryChange} checked={this.state.product.category === 'Fitness'} />*/}
-                    {/*            <label htmlFor="category4">Fitness</label>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <div className="p-field">
+                        <label htmlFor="description">COMP_DESC</label>
+                        <InputTextarea id="description" value={this.state.DOC_SCREEN_COMPONENT.COMP_DESC} onChange={(e) => this.onInputChange(e, 'COMP_DESC')} required rows={3} cols={20} />
+                    </div>
 
                 </Dialog>
 
-                <Dialog visible={this.state.deleteEmployeeDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteEmployeeDialogFooter} onHide={this.hideDeleteEmployeeDialog}>
+                <Dialog visible={this.state.deleteDOC_SCREEN_COMPONENTDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDOC_SCREEN_COMPONENTDialogFooter} onHide={this.hideDeleteDOC_SCREEN_COMPONENTDialog}>
                     <div className="confirmation-content">
                         <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem'}} />
                         {this.state.product && <span>Are you sure you want to delete <b>{this.state.product.name}</b>?</span>}
                     </div>
                 </Dialog>
 
-                <Dialog visible={this.state.deleteEmployeesDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteEmployeesDialogFooter} onHide={this.hideDeleteEmployeesDialog}>
+                <Dialog visible={this.state.deleteDOC_SCREEN_COMPONENTDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDOC_SCREEN_COMPONENTsDialogFooter} onHide={this.hideDeleteDOC_SCREEN_COMPONENTSDialog}>
                     <div className="confirmation-content">
                         <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem'}} />
                         {this.state.employee && <span>Are you sure you want to delete the selected products?</span>}
