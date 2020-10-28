@@ -120,7 +120,7 @@ export class CrudGird extends Component {
             data:{
                 fun_name:"PRO_INSERT_D_SCREEN_COMPONENT",
                 param_name:["P_COMP_NAME","P_COMP_TYPE_ID","P_COMP_DESC","P_SCREEN_ID"],
-                param_value:[this.state.DOC_SCREEN_COMPONENT.COMP_NAME , this.state.DOC_SCREEN_COMPONENT.COMP_TYPE_ID , this.state.DOC_SCREEN_COMPONENT.COMP_DESC , this.state.DOC_SCREEN_COMPONENT.SCREEN_ID]
+                param_value:[this.state.DOC_SCREEN_COMPONENT.COMP_NAME , this.state.DOC_SCREEN_COMPONENT.COMP_TYPE_ID , this.state.DOC_SCREEN_COMPONENT.COMP_DESC , "3"]
             }
 
         })
@@ -152,7 +152,6 @@ export class CrudGird extends Component {
                 console.log(response.data)
             })
             .catch(error => console.error('timeout exceeded'))
-        window.location.reload()
 
     }
 
@@ -305,7 +304,7 @@ export class CrudGird extends Component {
                     <DataTable ref={(el) => this.dt = el} value={this.props.data} selection={this.state.selectedDOC_SCREEN_COMPONENTS} onSelectionChange={(e) => this.setState({ selectedDOC_SCREEN_COMPONENTS: e.value })}
                                dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} DOC_COMP"
                                globalFilter={this.state.globalFilter}
                                header={header}>
 
@@ -328,7 +327,6 @@ export class CrudGird extends Component {
                         <label htmlFor="description">COMP_TYPE_ID</label>
                         <Dropdown optionLabel="COMP_TYPE_NAME" optionValue="COMP_TYPE_ID" value={this.state.COMP_TYPE_ID} options={this.props.combo} onChange={(e) => {
                             this.onInputChange(e,'COMP_TYPE_ID')
-                            console.log(e)
                             this.setState({COMP_TYPE_ID:e.target.value})
                         console.log(this.state.COMP_TYPE_VALUE)}} placeholder="Select a COMPO_TYPE"/>
                     </div>
